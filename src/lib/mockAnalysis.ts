@@ -1,5 +1,4 @@
-// Simulated analysis results — replace with real API call to your Python backend
-// Your Python backend should load the .h5 model and expose a POST /analyze endpoint
+// Analysis helper — calls the Python backend that loads the .h5 model
 
 export interface AnalysisResult {
   matched: boolean;
@@ -13,14 +12,15 @@ export interface AnalysisResult {
   missingTopics: string[];
 }
 
-export const API_BASE_URL = ""; // Set your Python backend URL here, e.g. "https://your-api.onrender.com"
+const DEFAULT_API_BASE_URL = "http://localhost:8000";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
 export async function analyzeDocuments(
   moduleFile: File,
   paperFile: File
 ): Promise<AnalysisResult> {
-  // If API_BASE_URL is set, call the real backend
-  if (API_BASE_URL) {
+  if (!USE_MOCK) {
     const formData = new FormData();
     formData.append("module", moduleFile);
     formData.append("paper", paperFile);
@@ -31,7 +31,16 @@ export async function analyzeDocuments(
     });
 
     if (!response.ok) {
-      throw new Error("Analysis failed. Please try again.");
+      let message = "Analysis failed. Please try again.";
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        message = data?.detail || data?.message || message;
+      } else {
+        const text = await response.text();
+        if (text.trim()) message = text.trim();
+      }
+      throw new Error(message);
     }
 
     return response.json();
