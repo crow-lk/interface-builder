@@ -20,6 +20,15 @@ const Index = () => {
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // DEBUG: auto-load mock results for testing
+  useEffect(() => {
+    if (window.location.search.includes("debug=1")) {
+      import("@/lib/mockAnalysis").then(({ analyzeDocuments }) => {
+        const f = new File(["test"], "test.pdf");
+        analyzeDocuments(f, f).then(setResults);
+      });
+    }
+  }, []);
   const handleAnalyze = async () => {
     if (!moduleFile || !paperFile) return;
     setLoading(true);
