@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { Loader2, Info, BookOpen } from "lucide-react";
+import { Loader2, Upload, BookOpen, FileText, BarChart3, Brain, Target, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FileUploadCard from "@/components/FileUploadCard";
-import MatchResultCard from "@/components/MatchResultCard";
-import BloomQuestionCard from "@/components/BloomQuestionCard";
-import TopicList from "@/components/TopicList";
+import TopicCoverageTable from "@/components/dashboard/TopicCoverageTable";
+import SubtopicProgressCard from "@/components/dashboard/SubtopicProgressCard";
+import LearningOutcomesChart from "@/components/dashboard/LearningOutcomesChart";
+import CognitiveLevelChart from "@/components/dashboard/CognitiveLevelChart";
+import MarksDistributionChart from "@/components/dashboard/MarksDistributionChart";
+import QuestionTable from "@/components/dashboard/QuestionTable";
+import TopicRecommendations from "@/components/dashboard/TopicRecommendations";
 import { analyzeDocuments, type AnalysisResult } from "@/lib/mockAnalysis";
 
 const Index = () => {
@@ -34,104 +39,178 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container max-w-3xl py-8">
-          <div className="flex items-center gap-3 mb-2">
-            <BookOpen className="h-7 w-7 text-primary" />
-            <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-              Exam Paper vs Module Matching System
+      <header className="border-b bg-card sticky top-0 z-10">
+        <div className="container max-w-7xl py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BookOpen className="h-6 w-6 text-primary" />
+            <h1 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+              Exam Moderation System
             </h1>
           </div>
-          <p className="text-muted-foreground font-sans">
-            Upload a module outline and an exam paper to check Bloom's taxonomy coverage and module alignment.
-          </p>
+          {results && (
+            <Button variant="outline" size="sm" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export Report
+            </Button>
+          )}
         </div>
       </header>
 
-      <main className="container max-w-3xl py-8 space-y-6">
+      <main className="container max-w-7xl py-6 space-y-6">
         {/* Upload Section */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FileUploadCard
-            label="Upload Module"
-            description="Upload the module outline containing topics or CLOs."
-            file={moduleFile}
-            onFileChange={setModuleFile}
-          />
-          <FileUploadCard
-            label="Upload Exam Paper"
-            description="Upload the exam paper containing questions."
-            file={paperFile}
-            onFileChange={setPaperFile}
-          />
-        </div>
-
-        {/* Action Button */}
-        <Button
-          size="lg"
-          className="w-full font-sans font-semibold text-base"
-          disabled={!moduleFile || !paperFile || loading}
-          onClick={handleAnalyze}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Analyzing documents...
-            </>
-          ) : (
-            "Check Match"
-          )}
-        </Button>
-
-        {/* Error */}
-        {error && (
-          <Card className="border-danger bg-danger-muted">
-            <CardContent className="p-4 text-sm text-danger font-medium">{error}</CardContent>
-          </Card>
-        )}
-
-        {/* Results */}
-        {results && (
-          <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-            <div className="border-t pt-6">
-              <h2 className="font-serif font-bold text-xl text-foreground mb-4">Results</h2>
-
-              {/* Match Result */}
-              <MatchResultCard matched={results.matched} coverageRatio={results.coverageRatio} />
+        {!results && (
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-serif font-bold text-foreground mb-2">
+                Upload & Analyze
+              </h2>
+              <p className="text-muted-foreground">
+                Upload a module outline and an exam paper to analyze topic coverage, Bloom's taxonomy, and marks distribution.
+              </p>
             </div>
 
-            {/* Bloom Levels */}
-            <div>
-              <h3 className="font-sans font-semibold text-foreground mb-3">Predicted Bloom Levels</h3>
-              <div className="space-y-2">
-                {results.questions.map((q) => (
-                  <BloomQuestionCard
-                    key={q.number}
-                    questionNumber={q.number}
-                    questionText={q.text}
-                    bloomLevel={q.bloomLevel}
-                  />
-                ))}
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FileUploadCard
+                label="Module Outline"
+                description="Upload the module outline containing topics or CLOs."
+                file={moduleFile}
+                onFileChange={setModuleFile}
+              />
+              <FileUploadCard
+                label="Exam Paper"
+                description="Upload the exam paper containing questions."
+                file={paperFile}
+                onFileChange={setPaperFile}
+              />
             </div>
 
-            {/* Topics */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <TopicList title="Covered Module Items" items={results.coveredTopics} type="covered" />
-              <TopicList title="Missing / Not Included" items={results.missingTopics} type="missing" />
-            </div>
+            <Button
+              size="lg"
+              className="w-full font-sans font-semibold text-base"
+              disabled={!moduleFile || !paperFile || loading}
+              onClick={handleAnalyze}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Analyzing documents...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  Analyze Exam Paper
+                </>
+              )}
+            </Button>
+
+            {error && (
+              <Card className="border-danger bg-danger-muted">
+                <CardContent className="p-4 text-sm text-danger font-medium">{error}</CardContent>
+              </Card>
+            )}
+
+            <Card className="bg-muted/50">
+              <CardContent className="p-4 text-xs text-muted-foreground space-y-1">
+                <p><strong>Supported formats:</strong> PDF, DOCX, TXT, PNG, JPG</p>
+                <p>Scanned documents are supported using OCR.</p>
+              </CardContent>
+            </Card>
           </div>
         )}
 
-        {/* Info Panel */}
-        <Card className="bg-muted/50">
-          <CardContent className="p-4 flex items-start gap-3">
-            <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p><strong>Supported formats:</strong> PDF, DOCX, TXT, PNG, JPG</p>
-              <p>Scanned documents are supported using OCR.</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Results Dashboard */}
+        {results && (
+          <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+            {/* Back to upload */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setResults(null); setModuleFile(null); setPaperFile(null); }}
+              className="text-muted-foreground"
+            >
+              ← New Analysis
+            </Button>
+
+            <Tabs defaultValue="coverage" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 max-w-lg">
+                <TabsTrigger value="coverage" className="gap-1.5 text-xs sm:text-sm">
+                  <Target className="h-3.5 w-3.5" />
+                  Coverage
+                </TabsTrigger>
+                <TabsTrigger value="blooms" className="gap-1.5 text-xs sm:text-sm">
+                  <Brain className="h-3.5 w-3.5" />
+                  Bloom's
+                </TabsTrigger>
+                <TabsTrigger value="marks" className="gap-1.5 text-xs sm:text-sm">
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  Marks
+                </TabsTrigger>
+                <TabsTrigger value="questions" className="gap-1.5 text-xs sm:text-sm">
+                  <FileText className="h-3.5 w-3.5" />
+                  Questions
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Tab: Topic Coverage */}
+              <TabsContent value="coverage" className="space-y-6 mt-6">
+                <TopicCoverageTable data={results.topicCoverage} />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <SubtopicProgressCard data={results.subtopicProgress} />
+                  <LearningOutcomesChart data={results.learningOutcomes} />
+                </div>
+                <TopicRecommendations
+                  coveredTopics={results.coveredTopics}
+                  missingTopics={results.missingTopics}
+                />
+              </TabsContent>
+
+              {/* Tab: Bloom's Taxonomy */}
+              <TabsContent value="blooms" className="space-y-6 mt-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <CognitiveLevelChart data={results.bloomLevels} />
+                  <Card>
+                    <CardContent className="p-6">
+                      <h3 className="font-semibold text-foreground mb-4">Bloom's Level Distribution</h3>
+                      <div className="space-y-3">
+                        {results.bloomLevels.map((b, i) => (
+                          <div key={i} className="flex items-center justify-between">
+                            <span className="text-sm text-foreground">{b.level}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-primary rounded-full"
+                                  style={{ width: `${b.percentage}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-mono font-semibold text-foreground w-8 text-right">
+                                {b.percentage}%
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Tab: Marks */}
+              <TabsContent value="marks" className="space-y-6 mt-6">
+                <MarksDistributionChart
+                  data={results.marksDistribution}
+                  totalMarks={results.totalMarks}
+                  lowerOrderMarks={results.lowerOrderMarks}
+                  lowerOrderPercentage={results.lowerOrderPercentage}
+                />
+              </TabsContent>
+
+              {/* Tab: Questions */}
+              <TabsContent value="questions" className="space-y-6 mt-6">
+                <QuestionTable data={results.questions} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
       </main>
     </div>
   );
