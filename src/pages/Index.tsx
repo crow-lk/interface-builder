@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Loader2, Upload, BookOpen, FileText, BarChart3, Brain, Target, Download } from "lucide-react";
+import { Loader2, Upload, BookOpen, FileText, BarChart3, Brain, Target, Download, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import FileUploadCard from "@/components/FileUploadCard";
 import TopicCoverageTable from "@/components/dashboard/TopicCoverageTable";
 import SubtopicProgressCard from "@/components/dashboard/SubtopicProgressCard";
@@ -11,15 +12,15 @@ import CognitiveLevelChart from "@/components/dashboard/CognitiveLevelChart";
 import MarksDistributionChart from "@/components/dashboard/MarksDistributionChart";
 import QuestionTable from "@/components/dashboard/QuestionTable";
 import TopicRecommendations from "@/components/dashboard/TopicRecommendations";
-import { analyzeDocuments, type AnalysisResult } from "@/lib/mockAnalysis";
+import { analyzeDocuments, API_BASE_URL, type AnalysisResult } from "@/lib/mockAnalysis";
 
 const Index = () => {
   const [moduleFile, setModuleFile] = useState<File | null>(null);
   const [paperFile, setPaperFile] = useState<File | null>(null);
+  const [manualQuestions, setManualQuestions] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-
 
   const handleAnalyze = async () => {
     if (!moduleFile || !paperFile) return;
@@ -28,12 +29,35 @@ const Index = () => {
     setResults(null);
 
     try {
-      const data = await analyzeDocuments(moduleFile, paperFile);
+      const data = await analyzeDocuments(moduleFile, paperFile, manualQuestions);
       setResults(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportReport = async () => {
+    if (!moduleFile || !paperFile) return;
+    try {
+      const formData = new FormData();
+      formData.append("module", moduleFile);
+      formData.append("paper", paperFile);
+      if (manualQuestions.trim()) {
+        formData.append("manual_questions", manualQuestions.trim());
+      }
+      const res = await fetch(`${API_BASE_URL}/report`, { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Report generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "quality_summary_report.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("PDF export requires the Python backend to be running.");
     }
   };
 
@@ -48,12 +72,19 @@ const Index = () => {
               Exam Moderation System
             </h1>
           </div>
-          {results && (
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Export Report
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            {results?.modelAccuracy != null && (
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                Model accuracy: <span className="font-mono font-semibold text-foreground">{(results.modelAccuracy * 100).toFixed(1)}%</span>
+              </span>
+            )}
+            {results && (
+              <Button variant="outline" size="sm" className="gap-2" onClick={handleExportReport}>
+                <Download className="h-4 w-4" />
+                Export Report
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -85,6 +116,25 @@ const Index = () => {
               />
             </div>
 
+            {/* Manual Questions */}
+            <Card>
+              <CardContent className="p-4 space-y-2">
+                <label className="text-sm font-medium text-foreground">
+                  Additional Questions (optional)
+                </label>
+                <Textarea
+                  placeholder="Enter one question per line to include in the analysis..."
+                  value={manualQuestions}
+                  onChange={(e) => setManualQuestions(e.target.value)}
+                  rows={3}
+                  className="text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  These will be added to the questions extracted from the exam paper.
+                </p>
+              </CardContent>
+            </Card>
+
             <Button
               size="lg"
               className="w-full font-sans font-semibold text-base"
@@ -111,9 +161,12 @@ const Index = () => {
             )}
 
             <Card className="bg-muted/50">
-              <CardContent className="p-4 text-xs text-muted-foreground space-y-1">
-                <p><strong>Supported formats:</strong> PDF, DOCX, TXT, PNG, JPG</p>
-                <p>Scanned documents are supported using OCR.</p>
+              <CardContent className="p-4 flex items-start gap-3">
+                <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><strong>Supported formats:</strong> PDF, DOCX, TXT, PNG, JPG</p>
+                  <p>Scanned documents are supported using OCR.</p>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -126,14 +179,14 @@ const Index = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { setResults(null); setModuleFile(null); setPaperFile(null); }}
+              onClick={() => { setResults(null); setModuleFile(null); setPaperFile(null); setManualQuestions(""); }}
               className="text-muted-foreground"
             >
               ← New Analysis
             </Button>
 
             <Tabs defaultValue="coverage" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 max-w-lg">
+              <TabsList className="grid w-full grid-cols-5 max-w-2xl">
                 <TabsTrigger value="coverage" className="gap-1.5 text-xs sm:text-sm">
                   <Target className="h-3.5 w-3.5" />
                   Coverage
@@ -149,6 +202,10 @@ const Index = () => {
                 <TabsTrigger value="questions" className="gap-1.5 text-xs sm:text-sm">
                   <FileText className="h-3.5 w-3.5" />
                   Questions
+                </TabsTrigger>
+                <TabsTrigger value="recommendations" className="gap-1.5 text-xs sm:text-sm">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Tips
                 </TabsTrigger>
               </TabsList>
 
@@ -208,6 +265,49 @@ const Index = () => {
               {/* Tab: Questions */}
               <TabsContent value="questions" className="space-y-6 mt-6">
                 <QuestionTable data={results.questions} />
+              </TabsContent>
+
+              {/* Tab: Recommendations */}
+              <TabsContent value="recommendations" className="space-y-6 mt-6">
+                <Card>
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="font-semibold text-foreground">Topic Recommendations</h3>
+                    {results.recommendations.length > 0 ? (
+                      <div className="space-y-2">
+                        {results.recommendations.map((rec, i) => (
+                          <div key={i} className="flex items-start gap-2.5 px-3 py-2 rounded-lg text-sm bg-bloom-muted">
+                            <AlertTriangle className="h-4 w-4 text-bloom shrink-0 mt-0.5" />
+                            <span className="text-foreground">{rec}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-success">All topics are well covered. No recommendations needed.</p>
+                    )}
+
+                    <div className="border-t pt-4">
+                      <h3 className="font-semibold text-foreground mb-2">Summary</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="text-center p-3 bg-muted rounded-lg">
+                          <p className="text-2xl font-bold font-mono text-foreground">{results.questions.length}</p>
+                          <p className="text-xs text-muted-foreground">Questions</p>
+                        </div>
+                        <div className="text-center p-3 bg-muted rounded-lg">
+                          <p className="text-2xl font-bold font-mono text-foreground">{(results.coverageRatio * 100).toFixed(0)}%</p>
+                          <p className="text-xs text-muted-foreground">Coverage</p>
+                        </div>
+                        <div className="text-center p-3 bg-muted rounded-lg">
+                          <p className="text-2xl font-bold font-mono text-foreground">{results.totalMarks}</p>
+                          <p className="text-xs text-muted-foreground">Given Marks</p>
+                        </div>
+                        <div className="text-center p-3 bg-muted rounded-lg">
+                          <p className="text-2xl font-bold font-mono text-foreground">{results.lowerOrderPercentage}%</p>
+                          <p className="text-xs text-muted-foreground">Lower-Order</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
