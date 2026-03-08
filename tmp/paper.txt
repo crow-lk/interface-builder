@@ -1,0 +1,3 @@
+Question 1 (10 marks): Explain software testing fundamentals.
+Question 2 (15 marks): Apply a design pattern to solve a given design problem.
+Question 3 (5 marks): Define regression testing.

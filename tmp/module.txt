@@ -1,0 +1,5 @@
+Module 1: Software Testing
+CLO1: Explain software testing fundamentals.
+CLO2: Describe regression testing.
+Module 2: Design Patterns
+CLO3: Apply design patterns in software design.
