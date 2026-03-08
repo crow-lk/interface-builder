@@ -80,12 +80,21 @@ export interface MarksDistribution {
   recommended: number;
 }
 
+export interface SubQuestionAnalysis {
+  label: string;
+  text: string;
+  bloomLevel: string;
+  givenMarks: number;
+  recommendedMarks: number;
+}
+
 export interface QuestionAnalysis {
   number: number;
   text: string;
   bloomLevel: string;
   givenMarks: number;
   recommendedMarks: number;
+  subQuestions?: SubQuestionAnalysis[];
 }
 
 export interface AnalysisResult {
@@ -177,13 +186,30 @@ function transformApiResponse(api: ApiResponse): AnalysisResult {
     recommended: marksByLevel[level].recommended,
   }));
 
-  // Questions
+  // Questions with sub-questions
+  const MOCK_SUB_QUESTIONS: Record<number, SubQuestionAnalysis[]> = {
+    0: [
+      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
+      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 4 },
+      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 4 },
+    ],
+    1: [
+      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
+      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 8 },
+    ],
+    3: [
+      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 3 },
+      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 11 },
+    ],
+  };
+
   const questions: QuestionAnalysis[] = api.bloom_predictions.map((p, i) => ({
     number: i + 1,
     text: p.question,
     bloomLevel: p.predicted_bloom,
     givenMarks: p.given_marks || 0,
     recommendedMarks: p.recommended_marks,
+    subQuestions: MOCK_SUB_QUESTIONS[i] || undefined,
   }));
 
   // Marks totals
@@ -264,10 +290,10 @@ export async function analyzeDocuments(
     model_accuracy: 0.8742,
     questions_detected: 5,
     bloom_predictions: [
-      { question: "What is compound interest?", predicted_bloom: "Understand", given_marks: 15, recommended_marks: 6 },
+      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 10 },
       { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 10 },
       { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 4 },
-      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 30, recommended_marks: 14 },
+      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 14 },
       { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 8 },
     ],
     coverage: {
