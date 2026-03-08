@@ -24,23 +24,33 @@ const CognitiveLevelChart = ({ data }: Props) => {
         <CardTitle className="text-base font-semibold">Cognitive Level Coverage</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full h-52">
+        <div className="w-full h-64">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={chartData}
+                data={chartData.filter(d => d.percentage > 0)}
                 dataKey="percentage"
                 nameKey="level"
                 cx="50%"
                 cy="50%"
-                innerRadius={40}
-                outerRadius={80}
+                innerRadius={45}
+                outerRadius={85}
                 strokeWidth={2}
                 stroke="hsl(var(--card))"
-                label={({ percentage }) => `${percentage}%`}
-                labelLine
+                label={({ cx, cy, midAngle, outerRadius, percentage }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = outerRadius + 20;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  return (
+                    <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
+                      {percentage}%
+                    </text>
+                  );
+                }}
+                labelLine={false}
               >
-                {chartData.map((entry, i) => (
+                {chartData.filter(d => d.percentage > 0).map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
               </Pie>
