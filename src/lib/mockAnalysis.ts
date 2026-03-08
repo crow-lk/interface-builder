@@ -273,10 +273,10 @@ export async function analyzeDocuments(
     model_accuracy: 0.8742,
     questions_detected: 5,
     bloom_predictions: [
-      { question: "What is compound interest?", predicted_bloom: "Understand", given_marks: 15, recommended_marks: 6 },
+      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 10 },
       { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 10 },
       { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 4 },
-      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 30, recommended_marks: 14 },
+      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 14 },
       { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 8 },
     ],
     coverage: {
