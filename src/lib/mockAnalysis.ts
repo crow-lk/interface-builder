@@ -80,12 +80,21 @@ export interface MarksDistribution {
   recommended: number;
 }
 
+export interface SubQuestionAnalysis {
+  label: string;
+  text: string;
+  bloomLevel: string;
+  givenMarks: number;
+  recommendedMarks: number;
+}
+
 export interface QuestionAnalysis {
   number: number;
   text: string;
   bloomLevel: string;
   givenMarks: number;
   recommendedMarks: number;
+  subQuestions?: SubQuestionAnalysis[];
 }
 
 export interface AnalysisResult {
