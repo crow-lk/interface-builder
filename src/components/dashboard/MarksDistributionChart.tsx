@@ -38,7 +38,7 @@ const MarksDistributionChart = ({ data, totalMarks, lowerOrderMarks, lowerOrderP
                 ))}
                 <LabelList dataKey="given" position="top" fontSize={10} />
               </Bar>
-              <Bar dataKey="recommended" name="AI Recommended" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="recommended" name="Recommended" radius={[4, 4, 0, 0]}>
                 {data.map((_, i) => (
                   <Cell key={i} fill="hsl(var(--bloom))" opacity={0.5} />
                 ))}

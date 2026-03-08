@@ -189,17 +189,17 @@ function transformApiResponse(api: ApiResponse): AnalysisResult {
   // Questions with sub-questions
   const MOCK_SUB_QUESTIONS: Record<number, SubQuestionAnalysis[]> = {
     0: [
-      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
-      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 4 },
-      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 4 },
+      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 4 },
+      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 8 },
+      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 8 },
     ],
     1: [
-      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
-      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 8 },
+      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 5 },
+      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 20 },
     ],
     3: [
-      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 3 },
-      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 11 },
+      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 8 },
+      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 22 },
     ],
   };
 
@@ -290,11 +290,11 @@ export async function analyzeDocuments(
     model_accuracy: 0.8742,
     questions_detected: 5,
     bloom_predictions: [
-      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 10 },
-      { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 10 },
-      { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 4 },
-      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 14 },
-      { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 8 },
+      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 20 },
+      { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 25 },
+      { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 10 },
+      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 30 },
+      { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 15 },
     ],
     coverage: {
       overall_coverage_ratio: 0.571,
@@ -324,7 +324,7 @@ export async function analyzeDocuments(
       bloom_distribution: { Understand: 1, Analyze: 1, Remember: 1, Create: 1, Apply: 1 },
       overall_coverage_ratio: 0.571,
       given_total_marks: 100,
-      recommended_total_marks: 42,
+      recommended_total_marks: 100,
       missing_items: [],
       topic_summary: [],
       recommendations: [],
