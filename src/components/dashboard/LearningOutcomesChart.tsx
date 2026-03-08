@@ -16,23 +16,33 @@ const LearningOutcomesChart = ({ data }: Props) => {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
-          <div className="w-40 h-40">
+          <div className="w-48 h-48">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data}
+                  data={data.filter(d => d.value > 0)}
                   dataKey="value"
                   nameKey="label"
                   cx="50%"
                   cy="50%"
                   innerRadius={0}
-                  outerRadius={70}
+                  outerRadius={75}
                   strokeWidth={2}
                   stroke="hsl(var(--card))"
-                  label={({ value }) => `${value}%`}
+                  label={({ cx, cy, midAngle, outerRadius, value }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius = outerRadius + 18;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                    return (
+                      <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
+                        {value}%
+                      </text>
+                    );
+                  }}
                   labelLine={false}
                 >
-                  {data.map((entry, i) => (
+                  {data.filter(d => d.value > 0).map((entry, i) => (
                     <Cell key={i} fill={entry.color} />
                   ))}
                 </Pie>
