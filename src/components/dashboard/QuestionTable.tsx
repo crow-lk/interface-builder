@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QuestionAnalysis } from "@/lib/mockAnalysis";
 
@@ -13,6 +15,52 @@ const BLOOM_COLORS: Record<string, string> = {
 interface Props {
   data: QuestionAnalysis[];
 }
+
+const QuestionRow = ({ q }: { q: QuestionAnalysis }) => {
+  const [expanded, setExpanded] = useState(false);
+  const hasSubs = q.subQuestions && q.subQuestions.length > 0;
+
+  return (
+    <>
+      <tr
+        className={`border-b last:border-0 ${hasSubs ? "cursor-pointer hover:bg-muted/50" : ""}`}
+        onClick={() => hasSubs && setExpanded(!expanded)}
+      >
+        <td className="px-6 py-3 font-medium text-foreground">
+          <div className="flex items-center gap-1.5">
+            {hasSubs && (
+              expanded
+                ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            )}
+            Q{q.number}
+          </div>
+        </td>
+        <td className="px-4 py-3 text-foreground max-w-xs truncate font-medium">{q.text}</td>
+        <td className="px-4 py-3">
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${BLOOM_COLORS[q.bloomLevel] || "bg-muted text-muted-foreground"}`}>
+            {q.bloomLevel}
+          </span>
+        </td>
+        <td className="px-4 py-3 text-right font-mono text-foreground font-semibold">{q.givenMarks}</td>
+        <td className="px-6 py-3 text-right font-mono text-foreground font-semibold">{q.recommendedMarks}</td>
+      </tr>
+      {expanded && q.subQuestions?.map((sub) => (
+        <tr key={sub.label} className="border-b last:border-0 bg-muted/30">
+          <td className="px-6 py-2 pl-12 text-muted-foreground text-xs">{q.number}{sub.label}</td>
+          <td className="px-4 py-2 text-muted-foreground text-xs max-w-xs truncate">{sub.text}</td>
+          <td className="px-4 py-2">
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${BLOOM_COLORS[sub.bloomLevel] || "bg-muted text-muted-foreground"}`}>
+              {sub.bloomLevel}
+            </span>
+          </td>
+          <td className="px-4 py-2 text-right font-mono text-muted-foreground text-xs">{sub.givenMarks}</td>
+          <td className="px-6 py-2 text-right font-mono text-muted-foreground text-xs">{sub.recommendedMarks}</td>
+        </tr>
+      ))}
+    </>
+  );
+};
 
 const QuestionTable = ({ data }: Props) => {
   return (
@@ -34,17 +82,7 @@ const QuestionTable = ({ data }: Props) => {
             </thead>
             <tbody>
               {data.map((q) => (
-                <tr key={q.number} className="border-b last:border-0">
-                  <td className="px-6 py-3 font-medium text-foreground">{q.number}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">{q.text}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${BLOOM_COLORS[q.bloomLevel] || "bg-muted text-muted-foreground"}`}>
-                      {q.bloomLevel}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono text-foreground">{q.givenMarks}</td>
-                  <td className="px-6 py-3 text-right font-mono text-foreground">{q.recommendedMarks}</td>
-                </tr>
+                <QuestionRow key={q.number} q={q} />
               ))}
             </tbody>
           </table>

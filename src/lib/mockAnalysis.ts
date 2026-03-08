@@ -186,13 +186,30 @@ function transformApiResponse(api: ApiResponse): AnalysisResult {
     recommended: marksByLevel[level].recommended,
   }));
 
-  // Questions
+  // Questions with sub-questions
+  const MOCK_SUB_QUESTIONS: Record<number, SubQuestionAnalysis[]> = {
+    0: [
+      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
+      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 4 },
+      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 4 },
+    ],
+    1: [
+      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
+      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 8 },
+    ],
+    3: [
+      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 3 },
+      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 11 },
+    ],
+  };
+
   const questions: QuestionAnalysis[] = api.bloom_predictions.map((p, i) => ({
     number: i + 1,
     text: p.question,
     bloomLevel: p.predicted_bloom,
     givenMarks: p.given_marks || 0,
     recommendedMarks: p.recommended_marks,
+    subQuestions: MOCK_SUB_QUESTIONS[i] || undefined,
   }));
 
   // Marks totals
