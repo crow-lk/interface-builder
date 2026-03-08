@@ -290,11 +290,11 @@ export async function analyzeDocuments(
     model_accuracy: 0.8742,
     questions_detected: 5,
     bloom_predictions: [
-      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 10 },
-      { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 10 },
-      { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 4 },
-      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 14 },
-      { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 8 },
+      { question: "Discuss compound interest and its applications.", predicted_bloom: "Understand", given_marks: 25, recommended_marks: 20 },
+      { question: "Compare capitalism and mercantilism.", predicted_bloom: "Analyze", given_marks: 25, recommended_marks: 25 },
+      { question: "Define software traceability.", predicted_bloom: "Remember", given_marks: 10, recommended_marks: 10 },
+      { question: "Design a test plan for a banking module.", predicted_bloom: "Create", given_marks: 20, recommended_marks: 30 },
+      { question: "Apply the waterfall model to a given scenario.", predicted_bloom: "Apply", given_marks: 20, recommended_marks: 15 },
     ],
     coverage: {
       overall_coverage_ratio: 0.571,
