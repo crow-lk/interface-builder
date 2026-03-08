@@ -324,7 +324,7 @@ export async function analyzeDocuments(
       bloom_distribution: { Understand: 1, Analyze: 1, Remember: 1, Create: 1, Apply: 1 },
       overall_coverage_ratio: 0.571,
       given_total_marks: 100,
-      recommended_total_marks: 42,
+      recommended_total_marks: 100,
       missing_items: [],
       topic_summary: [],
       recommendations: [],
