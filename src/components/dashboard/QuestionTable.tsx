@@ -77,7 +77,7 @@ const QuestionTable = ({ data }: Props) => {
                 <th className="text-left font-medium px-4 py-3">Question</th>
                 <th className="text-left font-medium px-4 py-3">Bloom's Level</th>
                 <th className="text-right font-medium px-4 py-3">Given Marks</th>
-                <th className="text-right font-medium px-6 py-3">AI Recommended</th>
+                <th className="text-right font-medium px-6 py-3">Recommended</th>
               </tr>
             </thead>
             <tbody>

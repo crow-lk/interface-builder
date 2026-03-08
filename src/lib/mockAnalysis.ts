@@ -189,17 +189,17 @@ function transformApiResponse(api: ApiResponse): AnalysisResult {
   // Questions with sub-questions
   const MOCK_SUB_QUESTIONS: Record<number, SubQuestionAnalysis[]> = {
     0: [
-      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
-      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 4 },
-      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 4 },
+      { label: "a", text: "Define compound interest.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 4 },
+      { label: "b", text: "Explain how compound interest differs from simple interest.", bloomLevel: "Understand", givenMarks: 10, recommendedMarks: 8 },
+      { label: "c", text: "Calculate compound interest for a given scenario.", bloomLevel: "Apply", givenMarks: 10, recommendedMarks: 8 },
     ],
     1: [
-      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 2 },
-      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 8 },
+      { label: "a", text: "Define capitalism.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 5 },
+      { label: "b", text: "Compare capitalism and mercantilism.", bloomLevel: "Analyze", givenMarks: 20, recommendedMarks: 20 },
     ],
     3: [
-      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 3 },
-      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 11 },
+      { label: "a", text: "List the components of a test plan.", bloomLevel: "Remember", givenMarks: 5, recommendedMarks: 8 },
+      { label: "b", text: "Design a complete test plan for a banking module.", bloomLevel: "Create", givenMarks: 15, recommendedMarks: 22 },
     ],
   };
 
